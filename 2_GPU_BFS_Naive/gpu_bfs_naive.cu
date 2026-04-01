@@ -2,10 +2,8 @@
 #include <vector>
 #include <fstream>
 #include <cuda_runtime.h>
-#include <chrono>
 
 using namespace std;
-using namespace chrono;
 
 __global__ void bfs_kernel(int *row_ptr, int *col_ind, int *frontier,
                            int *next_frontier, int *visited,
@@ -32,11 +30,6 @@ __global__ void bfs_kernel(int *row_ptr, int *col_ind, int *frontier,
 int main() {
     ifstream file("../Graph_Input/graph.txt");
 
-    if (!file.is_open()) {
-        cout << "Error opening graph file!" << endl;
-        return 1;
-    }
-
     int V, E;
     file >> V >> E;
 
@@ -49,11 +42,11 @@ int main() {
         adj[v].push_back(u);
     }
 
-    // Convert to CSR
+    // CSR conversion
     vector<int> row_ptr(V + 1);
     vector<int> col_ind;
-
     int edge_count = 0;
+
     for (int i = 0; i < V; i++) {
         row_ptr[i] = edge_count;
         for (int j : adj[i]) {
@@ -83,25 +76,24 @@ int main() {
     cudaMemset(d_visited, 0, V * sizeof(int));
     cudaMemset(d_next_size, 0, sizeof(int));
 
-    auto start = high_resolution_clock::now();
+    // CUDA timing
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    cudaEventRecord(start);
 
     bfs_kernel<<<(V/256)+1, 256>>>(d_row_ptr, d_col_ind, d_frontier,
                                    d_next_frontier, d_visited,
                                    d_next_size, V);
 
-    cudaDeviceSynchronize();
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
 
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
 
-    cout << "GPU BFS Time: " << duration.count() << " ms" << endl;
-
-    cudaFree(d_row_ptr);
-    cudaFree(d_col_ind);
-    cudaFree(d_frontier);
-    cudaFree(d_next_frontier);
-    cudaFree(d_visited);
-    cudaFree(d_next_size);
+    cout << "GPU Naive BFS Time: " << milliseconds << " ms" << endl;
 
     return 0;
 }
