@@ -1,0 +1,14 @@
+CUDA BFS Performance Results
+
+Graph Size:
+Vertices: 50000
+Edges: 300000
+
+Execution Time:
+CPU BFS Time: 24 ms
+GPU Naive BFS Time: 1.03 ms
+GPU Shared Memory BFS Time: 0.245 ms
+
+Speedup:
+Naive GPU Speedup: 23.3x
+Shared Memory GPU Speedup: 98x
