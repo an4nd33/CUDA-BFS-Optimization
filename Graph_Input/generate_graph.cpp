@@ -5,8 +5,8 @@
 using namespace std;
 
 int main() {
-    int V = 10000;   // Number of vertices
-    int E = 50000;   // Number of edges
+    int V = 50000;   // Number of vertices
+    int E = 300000;   // Number of edges
 
     ofstream file("graph.txt");
     file << V << " " << E << endl;
