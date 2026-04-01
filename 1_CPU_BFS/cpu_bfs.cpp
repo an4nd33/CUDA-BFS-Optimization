@@ -28,8 +28,8 @@ int main() {
     }
 
     cout << "Graph loaded" << endl;
-    cout << "Number of vertices: " << V << endl;
-    cout << "Number of edges: " << E << endl;
+    cout << "Vertices: " << V << endl;
+    cout << "Edges: " << E << endl;
 
     vector<bool> visited(V, false);
     queue<int> q;
@@ -37,8 +37,6 @@ int main() {
     int source = 0;
     visited[source] = true;
     q.push(source);
-
-    cout << "\nRunning CPU BFS..." << endl;
 
     auto start = high_resolution_clock::now();
 
